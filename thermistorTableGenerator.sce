@@ -2,12 +2,16 @@ close;
 clear;
 clc;
 
-R0 = 10000;
+//R0 = 10000; //Old Thermistor
+R0 = 32762; //Motor Thermistor
 T0 = 25+273;
-beta = 3435;
+//beta = 3553; //Old Thermistor
+beta = 4300; //Motor Thermsitor
 R_lower = 10e3; //+/- 5%
-Vs = 3.3;
+Vs = 5;
 ADC_RES = 2^12;
+
+G = ADC_RES
 
 T_MIN = -15;
 T_MAX = 100;
@@ -20,7 +24,7 @@ t = T_MIN:T_Delta:T_MAX
 for i = 1:length(t)
     T=t(i)+273;
     R(i) = R0 * exp(-beta * (1/T0 - 1/T));
-    Vout(i) = (ADC_RES*R_lower)/(R(i) + R_lower);
+    Vout(i) = (G*R_lower)/(R(i) + R_lower);
 end
 
 subplot(2,1,1);
@@ -45,4 +49,10 @@ y0 = data(point,3);
 
 Tout = (adc-x0)*m - y0
 disp(Tout)
+
+printf("data={");
+for index = 1:length(data(:,1))
+    printf("{%d, %f, %f},\n", data(index,1), data(index,2), data(index,3) );
+end
+printf("};");
 
